@@ -21,6 +21,7 @@ public enum MyColor {
     NAVY (0,0,128,255);
 
 
+    // Instance variables
     private final int r, g, b, argb;
 
     // Empty Constructor default

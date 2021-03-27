@@ -2,46 +2,49 @@ package sample;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public class MyShape {
+public abstract class MyShape implements MyShapeInterface{
 
     // Instance Variables
-    private double x, y;
+//    private double x, y;
+    MyPoint p;
     MyColor color;
 
     // Empty Constructor
     MyShape(){
-        this.x = 0;
-        this.y = 0;
+        // p is already set to 0
         this.color = MyColor.BLACK;
     }
 
     // Parameterized Constructor
-    MyShape(double x, double y, MyColor color){
-        this.x = x;
-        this.y = y;
+    MyShape(MyPoint p, MyColor color){
+        this.p = p;
         this.color = color;
     }
 
     // MyShape Getter Methods
-    public double getX() { return this.x; }
-    public double getY() { return this.y; }
+    public MyPoint getPoint() { return p;}
     public MyColor getColor() { return this.color; }
 
     // Area and Perimeter to be overwritten in sub-class
-    public double area() { return 0.0; }
-    public double perimeter() { return 0.0; }
+    public abstract double getArea();
+    public abstract double getPerimeter();
 
     // Returns objects values as String
     @Override
     public String toString() {
-        return "\nMyShape:\nThis is a shape object, at (" + x + ", " + y + ") with the color " + color + "\n" ;
+        return "\nMyShape:\nThis is a shape object, at (" + p.getX() + ", " + p.getY() + ") with the color " + color + "\n" ;
     }
 
     // Draws an empty background
-    public void draw(GraphicsContext GC) {
-        // Setting the entire canvas to window size
-        GC.setFill(color.getColor());
-        GC.fillRect(0,0, GC.getCanvas().getWidth(), GC.getCanvas().getHeight());
+    public abstract void draw(GraphicsContext GC);
+
+    @Override
+    public MyRectangle getMyBoundingRectangle() {
+        return null;
     }
 
+    @Override
+    public boolean pointInMyShape(MyPoint point) {
+        return false;
+    }
 }
