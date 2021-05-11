@@ -22,7 +22,7 @@ public class MyPoint {
     // toString specifv to MyPoint
     @Override
     public String toString(){
-        return "MyPoint: \np( " + x + ", " + y + " )"  + "\n";
+        return "MyPoint: ( " + x + ", " + y + " )";
     }
 
     // static function: finds distance between two points
