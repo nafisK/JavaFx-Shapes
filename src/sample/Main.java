@@ -5,25 +5,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
-import java.io.File;
-import java.io.IOException;
-import java.util.NoSuchElementException;
+
 import java.util.Scanner;
+
+import static com.sun.javafx.application.PlatformImpl.exit;
 
 public class Main extends Application {
 
-    /*#################### SET FILE LOCATION FIRST ####################*/
-    File file = new File("C:/Users/nafis/IdeaProjects/Assignment_1_CSC_21100_R/src/sample/Emma.txt");
-
+    // ROOD PASSWORD: ROOT
     // Global Inputs for testing all classes and methods
-    int arcWidth = 200;                                         // Width of the arc
-    int arcHeight = 200;                                        // Height of the arc
-    MyPoint centerPoint = new MyPoint(500, 350);          // Center Point of the arc/chart
-    int startAngle = 0; // Starting angle of the arc/slice      // Starting Angle of the arc/slice
-    int realAgnle = 45; // Angle of the respective arc drawn    // Actual Angle of the arc
-    char ch = 'X'; double prob = 0.5; int radius = 300;         // values of the arc
-    int n;                                                 // Number of slices in the Pie Chart to be displayed
-    static Scanner scnr;
     GraphicsContext GC;
 
     public static void main(String[] args) {
@@ -42,32 +32,102 @@ public class Main extends Application {
         Canvas canvas = new Canvas(x,y);
         GC = canvas.getGraphicsContext2D();
 
+
+        // Make this user changeable
+        String  host = "jdbc:mysql://localhost:3306/softdesignproject4",
+        username = "root",
+        password = "root";
+        CollegeDatabase db = new CollegeDatabase(host, username,password);
+
+        db.createAllTables();
+        db.populateTables();
+
         Scanner scan = new Scanner(System.in);
-        System.out.println("Assignment 3");
-        System.out.println("My Pie Chart Project");
-        System.out.print("Please enter the number alphabets you want to display: ");
-        n = scan.nextInt();
+        boolean flag = true;
+        int menu;
+        String gradeAggregateOfCourse = null;
+
+        System.out.println("Welcome to the Project 4 with Databases. \nImporting Data into database...\n");
+        System.out.println("Select one of the menu options or press -1 to print PIE CHART\n");
+
+        while (flag) {
+            System.out.println("1. Update Student Data");
+            System.out.println("2. Update Course Data");
+            System.out.println("3. Update Class Data");
+            System.out.println("4. Print Pie Chart");
+            System.out.print("Option: ");
+            menu = scan.nextInt();
+            scan.nextLine();
+            System.out.println("");
+
+            if (menu == 1) {
+                String studentID, itemField, replaceValWith;
+                System.out.print("Enter Student ID: ");
+                studentID = scan.next();
+                System.out.print("Enter Field Name: ");
+                itemField = scan.next();
+                System.out.print("Replace with: ");
+                replaceValWith = scan.next();
+                db.updateStudentTables(studentID, itemField, replaceValWith);
+                System.out.println("\nDatabase Updated.");
+            }
+            else if (menu == 2) {
+                String courseID, fieldName, replaceCourseWith;
+                System.out.print("Enter Couse ID: ");
+                courseID = scan.nextLine();
+                System.out.print("Enter Field Name: ");
+                fieldName = scan.next();
+                System.out.print("Replace with: ");
+                replaceCourseWith = scan.next();
+                System.out.println(courseID + " " + fieldName + " " + replaceCourseWith);
+                db.updateCoursesTables(courseID, fieldName, replaceCourseWith);
+                System.out.println("\nDatabase Updated.");
+            }
+            else if (menu == 3) {
+                String studentIdClasses, fieldNameInClasses, replaceInClasses;
+                System.out.print("Enter Student ID: ");
+                studentIdClasses = scan.next();
+                System.out.print("Enter Field Name: ");
+                fieldNameInClasses = scan.next();
+                System.out.print("Replace with: ");
+                replaceInClasses = scan.next();
+                db.updateClassesTables(studentIdClasses, fieldNameInClasses, replaceInClasses);
+                System.out.println("\nDatabase Updated.");
+            }
+            else if (menu == 4) {
+                System.out.println("Please Enter your course name: ");
+                gradeAggregateOfCourse = scan.nextLine();
+                flag = false;
+            }
+            else {
+                System.out.println("Invalid Input, Please try again.");
+            }
 
 
-        /* Unit Testing MyArc and MySlice */
+        }
 
-//        System.out.println("Testing MyArc Class: ");
-//        MyArc arcTest = new MyArc(centerPoint, arcWidth, arcHeight, startAngle, realAgnle, MyColor.RED);
-//        System.out.println(arcTest.toString());
-//        arcTest.draw(GC);
-//        drawUnderline();
+        // Input values for updating the Student Table
+//        String studentID = "1", itemField = "gender", replaceValWith = "U";
+//        db.updateStudentTables(studentID, itemField, replaceValWith);
+//
+//        // Input values for updating the Course Table
+//        String courseID = "10000 PP", fieldName = "department", replaceCourseWith = "Eng";
+//        db.updateCoursesTables(courseID, fieldName, replaceCourseWith);
+//
+//        // Input values for updating the Classes Table
+//        String studentIdClasses = "2", fieldNameInClasses = "grade", replaceInClasses = "F";
+//        db.updateClassesTables(studentIdClasses, fieldNameInClasses, replaceInClasses);
 
-//        System.out.println("Testing Slice Class: ");
-//        Slice sliceTest = new Slice(centerPoint, radius, startAngle, realAgnle, MyColor.BROWN, ch, prob);
-//        sliceTest.draw(GC);
-//        System.out.println(sliceTest.toString());
-//        drawUnderline();
+        // Input values for setting the aggregate grade for a class into a table
+//        String gradeAggregateOfCourse = "30400 F";
+        db.mapAggregateGrade(gradeAggregateOfCourse);
 
-        // FOR MAIN PIE CHART and HISTOGRAM CLASS
-        openFile();
-        readFile();
-        closeFile();
-
+        // Drawing the values into a pie chart
+        int numberOfGradesPrinted = 6, radius = 300;
+        int widthOfPie = 500;
+        int height = 350;
+        double startingAngle = 0;
+        db.draw(numberOfGradesPrinted, widthOfPie, height, 0, radius, GC);
 
         // Showing drawing in window
         pane.getChildren().add(canvas);
@@ -75,35 +135,5 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
 
-    }
-
-    private void openFile() throws IOException {
-        scnr = new Scanner(file);
-
-    }
-    private void readFile() {
-        try {
-            String input = "";
-            while (scnr.hasNext()){
-                input += scnr.nextLine().replaceAll("[^a-zA-Z]", "").toLowerCase();
-            }
-            HistogramAlphaBet H = new HistogramAlphaBet(input);
-            HistogramAlphaBet.MyPieChart pieChart = H.new MyPieChart(n, centerPoint, startAngle, radius);
-//            System.out.println(H.toString());
-            pieChart.draw(GC);
-        }
-        catch (NoSuchElementException elementException){
-            System.err.println("Invalid Input! Exiting.");
-        }
-        catch (IllegalStateException stateException) {
-            System.out.println("Error Processing File. Exiting.");
-        }
-    }
-    private void closeFile() {
-        if (scnr != null) scnr.close();
-    }
-
-    void drawUnderline(){
-        System.out.println("\n-----------------------------------------------\n");
     }
 }

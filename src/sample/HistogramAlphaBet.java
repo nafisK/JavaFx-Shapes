@@ -1,9 +1,11 @@
 package sample;
 import javafx.scene.canvas.GraphicsContext;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class HistogramAlphaBet {
@@ -14,12 +16,19 @@ public class HistogramAlphaBet {
 
     // Constructors
     HistogramAlphaBet() { }
+
+    // Accepts a String Val
     HistogramAlphaBet(String text) {
         String x = text.replaceAll("[^a-zA-Z]]", "").toLowerCase();
         for ( int i = 0; i < x.length(); i++ ){
             Character key = x.charAt(i);
             incrementFrequency(freq, key);
         }
+    }
+
+    // Accepts an HashMap
+    HistogramAlphaBet(Map<Character, Integer> dbHashmap) {
+        freq = dbHashmap;
     }
 
     // Get Methods
@@ -105,15 +114,20 @@ public class HistogramAlphaBet {
             // Puts all the data in a slicedSections Hashmap and draws
             int j = 2;
             int k = 0;
-            for(Character key: probability.keySet()){
-                double realAngle = 360 * probability.get(key);
+
+            // Sorting by Key
+            TreeMap<Character, Double> sortedByVal = new TreeMap<>();
+            sortedByVal.putAll(probability);
+
+            for(Character key: sortedByVal.keySet()){
+                double realAngle = 360 * sortedByVal.get(key);
                 if ( k < n ) {
-                    slicedSections.put(key, new Slice(centerPoint, radius, startAngle, realAngle, colors[j], key, probability.get(key)));
+                    slicedSections.put(key, new Slice(centerPoint, radius, startAngle, realAngle, colors[j], key, sortedByVal.get(key)));
                     startAngle += realAngle;
                     slicedSections.get(key).draw(GC);
                 }
                 else {
-                    RealAngleRest += realAngle; sortedProbabilitySum += probability.get(key);
+                    RealAngleRest += realAngle; sortedProbabilitySum += sortedByVal.get(key);
                 }
                 j++; k++;
             }
